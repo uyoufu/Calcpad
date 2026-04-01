@@ -2,6 +2,10 @@
 
 # 此阶段用于在快速模式(默认为调试配置)下从 VS 运行时
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+
+# 安装缺失依赖
+RUN apt-get update && apt-get install -y --no-install-recommends libfontconfig1 && rm -rf /var/lib/apt/lists/*
+
 USER $APP_UID
 WORKDIR /app
 # http
@@ -19,17 +23,17 @@ COPY ./Calcpad.Core/Calcpad.Core.csproj ./Calcpad.Core/
 COPY ./Calcpad.OpenXml/Calcpad.OpenXml.csproj ./Calcpad.OpenXml/
 COPY ./Calcpad.WebApi/Calcpad.WebApi/Calcpad.WebApi.csproj ./Calcpad.WebApi/Calcpad.WebApi/
 COPY ./Calcpad.WebApi/Calcpad.Document/Calcpad.Document.csproj ./Calcpad.WebApi/Calcpad.Document/
-RUN dotnet restore "./Calcpad.WebApi/Calcpad.WebApi/Calcpad.WebApi.csproj"
+RUN dotnet restore -r linux-x64 "./Calcpad.WebApi/Calcpad.WebApi/Calcpad.WebApi.csproj"
 COPY ./Calcpad.Core ./Calcpad.Core
 COPY ./Calcpad.OpenXml ./Calcpad.OpenXml
 COPY ./Calcpad.WebApi ./Calcpad.WebApi
 WORKDIR "/src/Calcpad.WebApi/Calcpad.WebApi"
-RUN dotnet build "./Calcpad.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build -r linux-x64 "./Calcpad.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # 此阶段用于发布要复制到最终阶段的服务项目
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Calcpad.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Calcpad.WebApi.csproj" -r linux-x64 -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # 此阶段在生产中使用，或在常规模式下从 VS 运行时使用(在不使用调试配置时为默认值)
 FROM base AS final

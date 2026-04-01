@@ -1,16 +1,11 @@
-using System.Reflection;
 using Calcpad.WebApi.Configs;
 using Calcpad.WebApi.Models.Base;
 using Calcpad.WebApi.Utils.Web;
 using Calcpad.WebApi.Utils.Web.Filters;
-using Calcpad.WebApi.Utils.Web.Swagger;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi;
-using MongoDB.Bson;
 
 // set the current directory to the base directory
 Directory.SetCurrentDirectory(AppContext.BaseDirectory);

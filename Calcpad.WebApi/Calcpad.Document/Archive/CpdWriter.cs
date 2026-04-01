@@ -1,7 +1,5 @@
-﻿using System.IO.Compression;
-using System.Reflection.PortableExecutable;
+using System.IO.Compression;
 using System.Text;
-using System.Text.RegularExpressions;
 using Calcpad.Document.Archive;
 using Calcpad.Document.Core;
 using Calcpad.Document.Core.Segments;
