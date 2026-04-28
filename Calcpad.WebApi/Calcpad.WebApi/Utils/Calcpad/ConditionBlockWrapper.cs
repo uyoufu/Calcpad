@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 
 namespace Calcpad.WebApi.Utils.Calcpad
@@ -18,7 +19,7 @@ namespace Calcpad.WebApi.Utils.Calcpad
         public List<HtmlNode> ContentNodes { get; set; } = new();
     }
 
-    public class ConditionBlockWrapper(HtmlDocument doc)
+    public partial class ConditionBlockWrapper(HtmlDocument doc)
     {
         /// <summary>
         /// process conditional blocks and wrap them in divs with v-if/v-else-if/v-else attributes
@@ -285,7 +286,21 @@ namespace Calcpad.WebApi.Utils.Calcpad
                 .Replace("≥", ">=")
                 .Replace(" ", "");
 
-            return innerText;
+            return RemoveUnitsFromNumericLiterals(innerText);
         }
+
+        /// <summary>
+        /// remove unit suffixes from numeric literals so Vue can evaluate the condition.
+        /// </summary>
+        private static string RemoveUnitsFromNumericLiterals(string expression)
+        {
+            return NumericLiteralWithUnitRegex().Replace(expression, "${number}");
+        }
+
+        [GeneratedRegex(
+            @"(?<![\w.])(?<number>(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)(?<unit>[\p{L}µμΩ°][\p{L}\p{N}µμΩ°²³^./]*)",
+            RegexOptions.CultureInvariant
+        )]
+        private static partial Regex NumericLiteralWithUnitRegex();
     }
 }
